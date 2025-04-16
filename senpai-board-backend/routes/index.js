@@ -22,6 +22,9 @@ router.get('/login', function (req, res, next) {
 router.get('/feed', function (req, res, next) {
   res.render('feed');
 });
+// router.get("/register", function (req, res, next){
+//   res.render('index')
+// })
 
 
 router.get("/profile", isLoggedIn, function(req, res, next){
@@ -48,7 +51,7 @@ router.post("/register", function (req, res, next) {
 })
 
 router.post("/login", passport.authenticate("local", {
-  successRedirect: "/profile",
+  successRedirect: "/feed",
   failureRedirect: "/login"
 }), function (req, res) { })
 
