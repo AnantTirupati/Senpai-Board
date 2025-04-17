@@ -3,6 +3,7 @@ var mongoose = require('mongoose')
 var express = require('express');
 var router = express.Router();
 const userModel = require('./users')
+const upload = require("./multer")
 
 const localStrategy = require('passport-local')
 passport.use(new localStrategy(userModel.authenticate()))
@@ -16,19 +17,53 @@ const postsModel = require('./posts')
 router.get('/', function (req, res, next) {
   res.render('index');
 });
-router.get('/login', function (req, res, next) {
-  res.render('login');
-});
+router.get("/login",function(req,res,next){
+  res.render('login', {error: req.flash('error')})
+})
 router.get('/feed', function (req, res, next) {
   res.render('feed');
 });
+//handle file upload
+router.post("/upload",isLoggedIn,  upload.single('file'), async function (req,res,next){
+  //access the upload file details via req.file
+  if(!req.file){
+    // 
+    req.flash("error", "⚠️ No file was uploaded!");
+    return res.redirect("/profile");
+  }
+  if (!req.body.postText || req.body.postText.trim() === "") {
+    req.flash("error", "⚠️ Post caption is missing!");
+    return res.redirect("/profile");
+  }
+  //jo file upload hui hai use save kro as a post and uska post id user ko do and post ko user ka id do
+  const user = await userModel.findOne({username: req.session.passport.user})
+  const post = await postsModel.create({
+    image : req.file.filename,
+    postText: req.body.postText,
+    user : user._id,
+  })
+  user.posts.push(post._id)
+  await user.save()
+  // res.send("done")
+  // res.redirect("/profile")
+  req.flash("success", "✅ Post uploaded successfully!");
+  res.redirect("/profile");
+  
+})
+
 // router.get("/register", function (req, res, next){
 //   res.render('index')
 // })
 
 
-router.get("/profile", isLoggedIn, function(req, res, next){
-  res.render('profile')
+router.get("/profile", isLoggedIn, async function(req, res, next){
+  const user = await userModel.findOne({
+    username: req.session.passport.user 
+  }).populate('posts')
+  const success = req.flash("success");
+  const error = req.flash("error");
+
+  res.render('profile', { user, success, error });
 })
 
 router.post("/register", function (req, res, next) {
@@ -52,7 +87,8 @@ router.post("/register", function (req, res, next) {
 
 router.post("/login", passport.authenticate("local", {
   successRedirect: "/feed",
-  failureRedirect: "/login"
+  failureRedirect: "/login",
+  failureFlash: true,
 }), function (req, res) { })
 
 router.get("/logout", function (req, res) {

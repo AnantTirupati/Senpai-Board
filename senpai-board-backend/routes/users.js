@@ -19,7 +19,7 @@ const userSchema = new mongoose.Schema({
   posts: [{
     type : mongoose.Schema.Types.ObjectId,
     // this is the post model which is imported in posts.js file
-    ref : 'post',
+    ref : 'posts',
   }],
   dp: {
     type : String   // as a url

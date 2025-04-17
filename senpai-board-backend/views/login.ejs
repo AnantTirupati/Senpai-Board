@@ -12,7 +12,9 @@
       <!--pinterest logo-->
       <img src="https://i.pinimg.com/originals/d3/d1/75/d3d175e560ae133f1ed5cd4ec173751a.png" alt="pin logo" class="img1" />
       <p class="header">Log In</p>
-
+      <% if(error.length>0){ %>
+        <p class="error"><%= error %></p>
+      <% } %>
 <form action="/login" method="post">
 
   <input type="text" placeholder="username" name="username" class="detail" /><br />
@@ -40,6 +42,7 @@
       </button>
     </div>
   </div>
+  
  <a href="/" class="upbtn">Don't Have an Account</a>
 
 </body>

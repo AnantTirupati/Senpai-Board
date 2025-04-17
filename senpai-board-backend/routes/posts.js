@@ -2,23 +2,26 @@ const mongoose = require('mongoose');
 const express = require('express');
 
 const postSchema = new mongoose.Schema({
-    postText : {
+    postText: {
         type: String,
-        required : true
+        required: true
     },
-    crratedAt : {
-        type : Date,
+    image: {
+        type: String
+    },
+    createdAt: {
+        type: Date,
         default: Date.now()
     },
-    users : [{
-        type : mongoose.Schema.Types.ObjectId,
-        ref : 'user'
+    users: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'user'
         // this is the user model which is imported in users.js file
     }],
-     likes : {
-        type : Array,
+    likes: {
+        type: Array,
         default: []
-     }
+    }
 })
 
-module.exports = mongoose.model('posts',postSchema)
+module.exports = mongoose.model('posts', postSchema)
